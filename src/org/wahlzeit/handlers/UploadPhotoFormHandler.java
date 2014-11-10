@@ -28,6 +28,9 @@ import org.wahlzeit.services.*;
 import org.wahlzeit.utils.*;
 import org.wahlzeit.webparts.*;
 
+import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
+
 /**
  * 
  * @author dirkriehle
@@ -57,7 +60,13 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 	 */
 	protected String doHandlePost(UserSession us, Map args) {
 		String tags = us.getAndSaveAsString(args, Photo.TAGS);
+		
+		// get the POST variables for location data
+		String latitude = us.getAndSaveAsString(args, "lat");
+		String longitude = us.getAndSaveAsString(args, "long");
+		String mapcode = us.getAndSaveAsString(args, "mapcode");
 
+		
 		if (!StringUtil.isLegalTagsString(tags)) {
 			us.setMessage(us.cfg().getInputIsInvalid());
 			return PartUtil.UPLOAD_PHOTO_PAGE_NAME;
@@ -76,6 +85,21 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			user.addPhoto(photo); 
 			
 			photo.setTags(new Tags(tags));
+			
+			// add location data to the photo if correct data is given. do nothing if invalid data is given.
+			if (!latitude.isEmpty() && !longitude.isEmpty()) {
+				try {
+					photo.setLocation(new GPSLocation(latitude+","+longitude));
+				} catch (AssertionError ae) {
+					
+				}
+			} else if (!mapcode.isEmpty()) {
+				try {
+					photo.setLocation(new MapcodeLocation(mapcode));
+				} catch (AssertionError ae) {
+					
+				}
+			} 
 
 			pm.savePhoto(photo);
 

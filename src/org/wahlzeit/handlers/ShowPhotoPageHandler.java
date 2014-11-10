@@ -163,6 +163,12 @@ public class ShowPhotoPageHandler extends AbstractWebPageHandler implements WebF
 			
 		WebPart caption = createWebPart(us, PartUtil.CAPTION_INFO_FILE);
 		caption.addString(Photo.CAPTION, getPhotoCaption(us, photo));
+		
+		// pass over the location data to be shown in the caption
+		caption.addString("location_type", photo.getLocation().getLocationType());
+		caption.addString("location", photo.getLocation().asString());
+		
+		
 		page.addWritable(Photo.CAPTION, caption);
 	}
 

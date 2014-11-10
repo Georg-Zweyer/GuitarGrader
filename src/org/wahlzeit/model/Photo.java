@@ -26,6 +26,11 @@ import java.net.*;
 import org.wahlzeit.services.*;
 import org.wahlzeit.utils.*;
 
+import zweyer.georg.adap.wahlzeit.model.EmptyLocation;
+import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.Location;
+import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
+
 /**
  * A photo represents a user-provided (uploaded) photo.
  * 
@@ -107,6 +112,16 @@ public class Photo extends DataObject {
 	 */
 	protected long creationTime = System.currentTimeMillis();
 	
+	
+	protected Location location = Location.EMPTY_LOCATION;
+	public Location getLocation() {
+		return location;
+	}
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
+
 	/**
 	 * 
 	 */
@@ -167,6 +182,14 @@ public class Photo extends DataObject {
 		creationTime = rset.getLong("creation_time");
 
 		maxPhotoSize = PhotoSize.getFromWidthHeight(width, height);
+		
+		// read the location data from the database
+		String locationType = rset.getString("location_type");
+		switch(locationType) {
+		case "GPS": {location = new GPSLocation(rset.getString("location"));break;}
+		case "Mapcode": {location = new MapcodeLocation(rset.getString("location"));break;}
+		case "Empty": {location = Location.EMPTY_LOCATION;break;}
+		}
 	}
 	
 	/**
@@ -186,7 +209,11 @@ public class Photo extends DataObject {
 		rset.updateInt("status", status.asInt());
 		rset.updateInt("praise_sum", praiseSum);
 		rset.updateInt("no_votes", noVotes);
-		rset.updateLong("creation_time", creationTime);		
+		rset.updateLong("creation_time", creationTime);	
+		
+		// write location data to database
+		rset.updateString("location_type", location.getLocationType());
+		rset.updateString("location", location.asString());
 	}
 
 	/**

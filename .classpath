@@ -19,5 +19,11 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/postgresql-9.3-1101.jdbc41.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/mapcode-1.40.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/slf4j-api-1.7.7.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/slf4j-log4j12-1.7.7.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/slf4j-ext-1.7.7.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/slf4j-migrator-1.7.7.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/javaxt-core.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
