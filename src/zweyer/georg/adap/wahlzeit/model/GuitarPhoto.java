@@ -26,6 +26,7 @@ public class GuitarPhoto extends Photo {
 	}	
 	protected void doSetManfacturer(GuitarManufacturer manufacturer) {
 		this.manufacturer = manufacturer;
+		incWriteCount();
 	}
 	protected void assertInvariants() throws IllegalStateException {
 		boolean isValid = (this.manufacturer != null);
