@@ -24,6 +24,8 @@ import java.sql.*;
 
 import org.wahlzeit.services.*;
 
+import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
+
 /**
  * 
  * @author dirkriehle
@@ -78,21 +80,21 @@ public class PhotoFactory {
 	 * @methodtype factory
 	 */
 	public Photo createPhoto() {
-		return new Photo();
+		return new GuitarPhoto();
 	}
 	
 	/**
 	 * 
 	 */
 	public Photo createPhoto(PhotoId id) {
-		return new Photo(id);
+		return new GuitarPhoto(id);
 	}
 	
 	/**
 	 * 
 	 */
 	public Photo createPhoto(ResultSet rs) throws SQLException {
-		return new Photo(rs);
+		return new GuitarPhoto(rs);
 	}
 	
 	/**

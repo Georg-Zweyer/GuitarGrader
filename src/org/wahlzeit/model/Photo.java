@@ -37,7 +37,7 @@ import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
  * @author dirkriehle
  *
  */
-public class Photo extends DataObject {
+public abstract class Photo extends DataObject {
 
 	/**
 	 * 

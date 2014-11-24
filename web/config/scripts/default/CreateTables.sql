@@ -31,7 +31,8 @@ CREATE TABLE photos (
 	no_votes integer,
 	creation_time bigint,
 	location_type text,
-	location text
+	location text,
+	manufacturer text
 );
 
 CREATE TABLE tags (

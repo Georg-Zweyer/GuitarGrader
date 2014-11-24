@@ -27,6 +27,8 @@ import org.wahlzeit.services.*;
 import org.wahlzeit.utils.*;
 import org.wahlzeit.webparts.*;
 
+import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
+
 /**
  * 
  * @author dirkriehle
@@ -168,7 +170,13 @@ public class ShowPhotoPageHandler extends AbstractWebPageHandler implements WebF
 		caption.addString("location_type", photo.getLocation().getLocationType());
 		caption.addString("location", photo.getLocation().asString());
 		
-		
+		// pass over the domain data to be shown in the caption
+		if (photo instanceof GuitarPhoto) {
+			caption.addString("manufacturer", ((GuitarPhoto)photo).getManufacturer().asString());
+		} else {
+			caption.addString("manufacturer", "N/A");
+		}
+
 		page.addWritable(Photo.CAPTION, caption);
 	}
 

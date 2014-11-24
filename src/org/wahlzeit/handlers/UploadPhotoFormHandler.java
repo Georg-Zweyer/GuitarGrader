@@ -29,6 +29,8 @@ import org.wahlzeit.utils.*;
 import org.wahlzeit.webparts.*;
 
 import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.GuitarManufacturer;
+import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
 
 /**
@@ -65,6 +67,9 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		String latitude = us.getAndSaveAsString(args, "lat");
 		String longitude = us.getAndSaveAsString(args, "long");
 		String mapcode = us.getAndSaveAsString(args, "mapcode");
+		
+		// get the POT variables for domain data
+		String manufacturer = us.getAndSaveAsString(args, "manufacturer");
 
 		
 		if (!StringUtil.isLegalTagsString(tags)) {
@@ -100,7 +105,11 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 					
 				}
 			} 
-
+			// add domain data to the photo if correct data is given and the Photo is a domain Photo. do nothing if invalid data is given.
+			if (!manufacturer.isEmpty() && photo instanceof GuitarPhoto) {
+				((GuitarPhoto) photo).setManufacturer(new GuitarManufacturer(manufacturer));
+			}
+			
 			pm.savePhoto(photo);
 
 			StringBuffer sb = UserLog.createActionEntry("UploadPhoto");
