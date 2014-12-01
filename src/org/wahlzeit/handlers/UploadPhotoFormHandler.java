@@ -107,7 +107,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			} 
 			// add domain data to the photo if correct data is given and the Photo is a domain Photo. do nothing if invalid data is given.
 			if (!manufacturer.isEmpty() && photo instanceof GuitarPhoto) {
-				((GuitarPhoto) photo).setManufacturer(new GuitarManufacturer(manufacturer));
+				((GuitarPhoto) photo).setManufacturer(GuitarManufacturer.getInstance(manufacturer));
 			}
 			
 			pm.savePhoto(photo);

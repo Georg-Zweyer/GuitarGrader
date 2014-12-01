@@ -202,3 +202,13 @@ td.fiveCol5 {
 	vertical-align: middle;
 }
 	
+	
+div#imageInfo {
+	display: none;
+	border: 1px solid #99ccff;
+	padding: 8px;
+}
+
+table#imageTable {
+	padding: 8px;
+}

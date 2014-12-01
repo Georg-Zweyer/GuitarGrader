@@ -8,7 +8,7 @@ import org.wahlzeit.model.PhotoId;
 
 public class GuitarPhoto extends Photo {
 	
-	protected GuitarManufacturer manufacturer = GuitarManufacturer.EMPTY;
+	protected GuitarManufacturer manufacturer = GuitarManufacturer.getInstance("");
 
 	public GuitarManufacturer getManufacturer() {
 		return manufacturer;
@@ -16,7 +16,9 @@ public class GuitarPhoto extends Photo {
 
 	public void setManufacturer(GuitarManufacturer manufacturer) {
 		//precondition
-		assert(manufacturer != null);
+		if(manufacturer == null){
+			throw new IllegalArgumentException();
+		}
 		
 		this.doSetManfacturer(manufacturer);
 		
@@ -47,7 +49,7 @@ public class GuitarPhoto extends Photo {
 	}
 	public void readFrom(ResultSet rset) throws SQLException {
 		super.readFrom(rset);
-		this.manufacturer = new GuitarManufacturer(rset.getString("manufacturer"));
+		this.manufacturer = GuitarManufacturer.getInstance(rset.getString("manufacturer"));
 	}
 	public void writeOn(ResultSet rset) throws SQLException {
 		super.writeOn(rset);

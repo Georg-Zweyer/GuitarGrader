@@ -24,30 +24,26 @@ public class DomainPhotoTest extends TestCase {
 		GuitarPhoto photo = (GuitarPhoto) PhotoFactory.getInstance().createPhoto();
 		try {
 			photo.setManufacturer(null);
-		} catch (AssertionError as) {
+		} catch (IllegalArgumentException as) {
 			return;
 		}
 		fail();
 	}
 	
 	public void testNewGuitarManufacturer() {
-		GuitarManufacturer gm = new GuitarManufacturer("");
+		GuitarManufacturer gm = GuitarManufacturer.getInstance("");
 		try {
-			GuitarManufacturer gm2 = new GuitarManufacturer(null);
-		} catch (AssertionError as) {
+			GuitarManufacturer gm2 = GuitarManufacturer.getInstance(null);
+		} catch (IllegalArgumentException as) {
 			return;
 		}
 		fail();
 	}
 	
-	public void testNullAssignmentGuitarManufacturer(){
-		GuitarManufacturer gm = new GuitarManufacturer("");
-		try {
-			gm.setManufacturer(null);
-		} catch (AssertionError as) {
-			return;
-		}
-		fail();
+	public void testGuitarManufacturerEquality() {
+		GuitarManufacturer gm = GuitarManufacturer.getInstance("1");
+		GuitarManufacturer gm2 = GuitarManufacturer.getInstance("1");
+		this.assertEquals(gm, gm2);
 	}
 	
 }

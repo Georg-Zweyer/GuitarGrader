@@ -1,9 +1,19 @@
 <p>Who/what/where is that?<p>
 
-<p>{$location_type} location:</p>
-<p>{$location}</p>
-<p>Manufacturer: {$manufacturer}</p>
+<p><a href="javascript:showHideDiv('imageInfo');">Click to show/hide further information!</a></p>
 
+<div id="imageInfo">
+<table id="infoTable">
+  <tr>
+    <td>{$location_type} Aufnahmeort:</td>
+    <td>{$location}</td>
+  </tr>
+  <tr>
+    <td>Hersteller:</td>
+    <td>{$manufacturer}</td>
+  </tr>
+</table>
+</div>
 <p><a href="javascript:showHideDiv('imageCaption');">Click to show/hide description!</a></p>
 
 <div id="imageCaption"><p>{$caption}</p></div>
