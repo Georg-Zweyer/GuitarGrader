@@ -25,8 +25,23 @@
 			<td class="twoCol2"><input type="text" name="tags" value="{$mapcode}" size="48" /></td>
 		</tr>
 		<tr>
-			<td class="twoCol1">Manufacturer:&nbsp;</td>
-			<td class="twoCol2"><input type="text" name="manufacturer" value="{$manufacturer}" size="48" /></td>
+			<td class="twoCol1"><input type="radio" name="newGuitar" value="0" checked>Existing guitar:&nbsp;</td>
+			<td class="twoCol2"><select name="guitarId">{$guitar}</select></td>
+		</tr>
+		<tr>
+			<td class="twoCol1"><input type="radio" name="newGuitar" value="1">New guitar:&nbsp;</td>
+			<td class="twoCol2">
+				<table>
+					<tr>
+						<td class="twoCol1">Name:&nbsp;</td>
+						<td class="twoCol2"><input type="text" name="guitarName" value="" size="48" /></td>
+					</tr>
+					<tr>
+						<td class="twoCol1">Manufacturer:&nbsp;</td>
+						<td class="twoCol2"><input type="text" name="guitarManufacturer" value="" size="48" /></td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 		<tr>
 			<td class="twoCol1">&nbsp;</td>

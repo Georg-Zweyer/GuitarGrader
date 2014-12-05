@@ -29,6 +29,9 @@ import org.wahlzeit.utils.*;
 import org.wahlzeit.webparts.*;
 
 import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.Guitar;
+import zweyer.georg.adap.wahlzeit.model.GuitarFactory;
+import zweyer.georg.adap.wahlzeit.model.GuitarManager;
 import zweyer.georg.adap.wahlzeit.model.GuitarManufacturer;
 import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
@@ -55,6 +58,22 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		part.addStringFromArgs(args, UserSession.MESSAGE);
 
 		part.maskAndAddStringFromArgs(args, Photo.TAGS);
+		
+		
+		StringBuffer buffer = new StringBuffer();
+		Collection<Guitar> list = GuitarManager.getInstance().loadGuitars();
+		for (Guitar guitar : list) {
+			buffer.append("<option ");
+		    buffer.append("value=\""+guitar.getId()+"\"");
+		    if(guitar.getId().equals(-1)) {
+		    	buffer.append(" selected");
+		    }
+		    buffer.append(">");
+		    buffer.append(guitar.getName());
+		    buffer.append("</option>");
+		}
+		
+		part.addString("guitar", buffer.toString());
 	}
 	
 	/**
@@ -69,8 +88,12 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		String mapcode = us.getAndSaveAsString(args, "mapcode");
 		
 		// get the POT variables for domain data
-		String manufacturer = us.getAndSaveAsString(args, "manufacturer");
-
+		String newGuitar = us.getAndSaveAsString(args, "newGuitar");
+		
+		String guitarId = us.getAndSaveAsString(args, "guitarId");
+		
+		String guitarName = us.getAndSaveAsString(args, "guitarName");
+		String guitarManufacturer = us.getAndSaveAsString(args, "guitarManufacturer");
 		
 		if (!StringUtil.isLegalTagsString(tags)) {
 			us.setMessage(us.cfg().getInputIsInvalid());
@@ -106,8 +129,18 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 				}
 			} 
 			// add domain data to the photo if correct data is given and the Photo is a domain Photo. do nothing if invalid data is given.
-			if (!manufacturer.isEmpty() && photo instanceof GuitarPhoto) {
-				((GuitarPhoto) photo).setManufacturer(GuitarManufacturer.getInstance(manufacturer));
+			if(photo instanceof GuitarPhoto) {
+				GuitarManager gm = GuitarManager.getInstance();
+				if(newGuitar.equals("0")) {
+					Guitar guitar = gm.getGuitarFromId(Integer.decode(guitarId));
+					((GuitarPhoto) photo).setGuitar(guitar);
+				} else if (newGuitar.equals("1")){
+					Guitar guitar = gm.createGuitar();
+					guitar.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
+					guitar.setName(guitarName);
+					((GuitarPhoto) photo).setGuitar(guitar);
+					gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise				
+					}
 			}
 			
 			pm.savePhoto(photo);

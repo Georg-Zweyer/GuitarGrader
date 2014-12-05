@@ -29,6 +29,7 @@ import javax.imageio.*;
 import org.wahlzeit.services.*;
 
 import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.GuitarFactory;
 
 /**
  * PhotoUtil provides a set of utility functions to create defined images.
@@ -43,7 +44,7 @@ public class PhotoUtil {
 	 * 
 	 */
 	public static Photo createPhoto(File source, PhotoId id) throws Exception {
-		Photo result = PhotoFactory.getInstance().createPhoto(id);
+		Photo result = GuitarFactory.getInstance().createPhoto(id);
 		
 		Image sourceImage = createImageFiles(source, id);
 		

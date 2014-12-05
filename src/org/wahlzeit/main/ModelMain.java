@@ -29,6 +29,8 @@ import org.wahlzeit.services.*;
 import org.wahlzeit.servlets.AbstractServlet;
 import org.wahlzeit.webparts.*;
 
+import zweyer.georg.adap.wahlzeit.model.GuitarManager;
+
 /**
  * A single-threaded Main class with database connection.
  * Can be used by tools that don't want to start a server.
@@ -138,6 +140,9 @@ public abstract class ModelMain extends AbstractMain {
 			int lastSessionId = result.getInt("last_session_id");
 			AbstractServlet.setLastSessionId(lastSessionId);		
 			SysLog.logSysInfo("loaded global variable lastSessionId: " + lastSessionId);
+			int lastGuitarId = result.getInt("last_guitar_id");
+			GuitarManager.getInstance().setCurrentId(lastGuitarId);		
+			SysLog.logSysInfo("loaded global variable lastGuitarId: " + lastGuitarId);
 		} else {
 			SysLog.logSysError("Could not load globals!");
 		}
@@ -170,6 +175,9 @@ public abstract class ModelMain extends AbstractMain {
 			int lastSessionId = AbstractServlet.getLastSessionId();
 			rset.updateInt("last_session_id", lastSessionId);
 			SysLog.logSysInfo("saved global variable lastSessionId: " + lastSessionId);
+			int lastGuitarId = GuitarManager.getInstance().getCurrentId();
+			rset.updateInt("last_guitar_id", lastGuitarId);
+			SysLog.logSysInfo("saved global variable lastGuitarId: " + lastGuitarId);
 			rset.updateRow();
 		} else {
 			SysLog.logSysError("Could not save globals!");
@@ -185,7 +193,7 @@ public abstract class ModelMain extends AbstractMain {
 		PhotoCaseManager.getInstance().savePhotoCases();
 		PhotoManager.getInstance().savePhotos();			
 		UserManager.getInstance().saveUsers();
-
+		GuitarManager.getInstance().saveGuitars();
 		saveGlobals();
 	}
 	

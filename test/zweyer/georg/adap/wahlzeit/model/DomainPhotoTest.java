@@ -17,13 +17,13 @@ public class DomainPhotoTest extends TestCase {
 	}
 	
 	public void testNewGuitarPhoto() {
-		GuitarPhoto photo = (GuitarPhoto) PhotoFactory.getInstance().createPhoto();
+		GuitarPhoto photo = (GuitarPhoto) GuitarFactory.getInstance().createPhoto();
 	}
 	
 	public void testNullAssignmentGuitarPhoto(){
-		GuitarPhoto photo = (GuitarPhoto) PhotoFactory.getInstance().createPhoto();
+		GuitarPhoto photo = (GuitarPhoto) GuitarFactory.getInstance().createPhoto();
 		try {
-			photo.setManufacturer(null);
+			photo.getGuitar().setManufacturer(null);
 		} catch (IllegalArgumentException as) {
 			return;
 		}

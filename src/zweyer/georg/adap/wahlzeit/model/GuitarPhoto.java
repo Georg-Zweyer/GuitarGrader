@@ -8,30 +8,34 @@ import org.wahlzeit.model.PhotoId;
 
 public class GuitarPhoto extends Photo {
 	
-	protected GuitarManufacturer manufacturer = GuitarManufacturer.getInstance("");
-
-	public GuitarManufacturer getManufacturer() {
-		return manufacturer;
+	protected Guitar guitar;
+	
+	
+	public Guitar getGuitar() {
+		return guitar;
 	}
 
-	public void setManufacturer(GuitarManufacturer manufacturer) {
+	public void setGuitar(Guitar guitar) {
 		//precondition
-		if(manufacturer == null){
+		if(guitar == null){
 			throw new IllegalArgumentException();
 		}
 		
-		this.doSetManfacturer(manufacturer);
+		this.doSetGuitar(guitar);
 		
 		//postcondition
-		assert(this.manufacturer.equals(manufacturer));
+		assert(this.guitar.equals(guitar));
 		
 	}	
-	protected void doSetManfacturer(GuitarManufacturer manufacturer) {
-		this.manufacturer = manufacturer;
+	protected void doSetGuitar(Guitar guitar) {
+		this.guitar = guitar;
 		incWriteCount();
 	}
+	
+	
+	
 	protected void assertInvariants() throws IllegalStateException {
-		boolean isValid = (this.manufacturer != null);
+		boolean isValid = (this.guitar != null);
 		
 		if (!isValid) {
 			throw new IllegalStateException("class invariant violated");
@@ -40,20 +44,27 @@ public class GuitarPhoto extends Photo {
 	
 	public GuitarPhoto() {
 		super();
+		initialize();
 	}
 	public GuitarPhoto(PhotoId myId) {
 		super(myId);
+		initialize();
 	}
 	public GuitarPhoto(ResultSet rset) throws SQLException {
-		this.readFrom(rset);
+		super(rset);
+	}
+	protected void initialize(){
+		this.guitar = GuitarManager.getInstance().getGuitarFromId(-1);;
 	}
 	public void readFrom(ResultSet rset) throws SQLException {
 		super.readFrom(rset);
-		this.manufacturer = GuitarManufacturer.getInstance(rset.getString("manufacturer"));
+		
+		this.guitar = GuitarManager.getInstance().getGuitarFromId(rset.getInt("guitar_id"));
 	}
 	public void writeOn(ResultSet rset) throws SQLException {
 		super.writeOn(rset);
-		rset.updateString("manufacturer", manufacturer.asString());
+		
+		rset.updateInt("guitar_id", this.guitar.getId());
 	}
 
 

@@ -27,6 +27,8 @@ import java.util.*;
 import org.wahlzeit.main.*;
 import org.wahlzeit.services.*;
 
+import zweyer.georg.adap.wahlzeit.model.GuitarFactory;
+
 /**
  * A photo manager provides access to and manages photos.
  * 
@@ -137,7 +139,7 @@ public class PhotoManager extends ObjectManager {
 	 * 
 	 */
 	protected Photo createObject(ResultSet rset) throws SQLException {
-		return PhotoFactory.getInstance().createPhoto(rset);
+		return GuitarFactory.getInstance().createPhoto(rset);
 	}
 	
 	/**
