@@ -34,6 +34,7 @@ import zweyer.georg.adap.wahlzeit.model.GuitarFactory;
 import zweyer.georg.adap.wahlzeit.model.GuitarManager;
 import zweyer.georg.adap.wahlzeit.model.GuitarManufacturer;
 import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
+import zweyer.georg.adap.wahlzeit.model.GuitarType;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
 
 /**
@@ -69,7 +70,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		    	buffer.append(" selected");
 		    }
 		    buffer.append(">");
-		    buffer.append(guitar.getName());
+		    buffer.append(guitar.getType().getName());
 		    buffer.append("</option>");
 		}
 		
@@ -136,8 +137,10 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 					((GuitarPhoto) photo).setGuitar(guitar);
 				} else if (newGuitar.equals("1")){
 					Guitar guitar = gm.createGuitar();
-					guitar.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
-					guitar.setName(guitarName);
+					GuitarType type = new GuitarType();
+					type.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
+					type.setName(guitarName);
+					guitar.setType(type);
 					((GuitarPhoto) photo).setGuitar(guitar);
 					gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise				
 					}

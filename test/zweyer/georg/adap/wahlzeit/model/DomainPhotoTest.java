@@ -23,7 +23,7 @@ public class DomainPhotoTest extends TestCase {
 	public void testNullAssignmentGuitarPhoto(){
 		GuitarPhoto photo = (GuitarPhoto) GuitarFactory.getInstance().createPhoto();
 		try {
-			photo.getGuitar().setManufacturer(null);
+			photo.getGuitar().getType().setManufacturer(null);
 		} catch (IllegalArgumentException as) {
 			return;
 		}
