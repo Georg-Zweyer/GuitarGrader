@@ -8,13 +8,14 @@ import org.wahlzeit.model.PhotoId;
 
 public class GuitarPhoto extends Photo {
 	
+	/* Collaboration: 
+	 * GuitarPhoto-Guitar
+	 */
 	protected Guitar guitar;
-	
 	
 	public Guitar getGuitar() {
 		return guitar;
 	}
-
 	public void setGuitar(Guitar guitar) {
 		//precondition
 		if(guitar == null){
@@ -31,7 +32,7 @@ public class GuitarPhoto extends Photo {
 		this.guitar = guitar;
 		incWriteCount();
 	}
-	
+	//------------
 	
 	
 	protected void assertInvariants() throws IllegalStateException {
@@ -42,6 +43,9 @@ public class GuitarPhoto extends Photo {
 		}
 	}
 	
+	/* Collaboration: 
+	 * Factory
+	 */
 	public GuitarPhoto() {
 		super();
 		initialize();
@@ -50,12 +54,24 @@ public class GuitarPhoto extends Photo {
 		super(myId);
 		initialize();
 	}
+	//---------------
+	
+	/* Collaboration: 
+	 * Factory
+	 * Serializer
+	 */
 	public GuitarPhoto(ResultSet rset) throws SQLException {
 		super(rset);
 	}
+	//--------------
+	
 	protected void initialize(){
 		this.guitar = GuitarManager.getInstance().getGuitarFromId(-1);;
 	}
+	
+	/* Collaboration: 
+	 * Serializer
+	 */
 	public void readFrom(ResultSet rset) throws SQLException {
 		super.readFrom(rset);
 		

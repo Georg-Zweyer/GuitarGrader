@@ -139,7 +139,7 @@ public class PhotoManager extends ObjectManager {
 	 * 
 	 */
 	protected Photo createObject(ResultSet rset) throws SQLException {
-		return GuitarFactory.getInstance().createPhoto(rset);
+		return PhotoFactory.getInstance().createPhoto(rset);
 	}
 	
 	/**

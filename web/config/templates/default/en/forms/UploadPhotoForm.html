@@ -25,20 +25,45 @@
 			<td class="twoCol2"><input type="text" name="tags" value="{$mapcode}" size="48" /></td>
 		</tr>
 		<tr>
-			<td class="twoCol1"><input type="radio" name="newGuitar" value="0" checked>Existing guitar:&nbsp;</td>
+			<td class="twoCol1"><div class="radioOption"><input type="radio" name="newGuitar" value="0" checked>Existing&nbsp;guitar:&nbsp;</div></td>
 			<td class="twoCol2"><select name="guitarId">{$guitar}</select></td>
 		</tr>
 		<tr>
-			<td class="twoCol1"><input type="radio" name="newGuitar" value="1">New guitar:&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="twoCol1"><div class="radioOption"><input type="radio" name="newGuitar" value="1">New&nbsp;guitar:&nbsp;</div></td>
 			<td class="twoCol2">
-				<table>
+				<table style="width:100%">
 					<tr>
-						<td class="twoCol1">Name:&nbsp;</td>
-						<td class="twoCol2"><input type="text" name="guitarName" value="" size="48" /></td>
+						<td class="twoCol1">Color:&nbsp;</td>
+						<td class="twoCol2"><input type="text" name="guitarColor" value="" size="32" /></td>
 					</tr>
 					<tr>
-						<td class="twoCol1">Manufacturer:&nbsp;</td>
-						<td class="twoCol2"><input type="text" name="guitarManufacturer" value="" size="48" /></td>
+						<td class="twoCol1">Year built:&nbsp;</td>
+						<td class="twoCol2"><input type="text" name="guitarYearBuilt" value="" size="32" /></td>
+					</tr>
+					<tr>
+						<td class="twoCol1"><div class="radioOption"><input type="radio" name="newGuitarType" value="0" checked>Existing&nbsp;guitartype:&nbsp;</div></td>
+						<td class="twoCol2"><select name="guitarTypeId">{$guitarType}</select></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="twoCol1"><div class="radioOption"><input type="radio" name="newGuitarType" value="1">New&nbsp;guitartype:&nbsp;</div></td>
+						<td class="twoCol2">
+							<table>
+								<tr>
+									<td class="twoCol1">Name:&nbsp;</td>
+									<td class="twoCol2"><input type="text" name="guitarName" value="" size="24" /></td>
+								</tr>
+								<tr>
+									<td class="twoCol1">Manufacturer:&nbsp;</td>
+									<td class="twoCol2"><input type="text" name="guitarManufacturer" value="" size="24" /></td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 				</table>
 			</td>

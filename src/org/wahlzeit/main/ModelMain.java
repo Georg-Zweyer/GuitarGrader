@@ -30,6 +30,8 @@ import org.wahlzeit.servlets.AbstractServlet;
 import org.wahlzeit.webparts.*;
 
 import zweyer.georg.adap.wahlzeit.model.GuitarManager;
+import zweyer.georg.adap.wahlzeit.model.GuitarPhotoFactory;
+import zweyer.georg.adap.wahlzeit.model.GuitarTypeManager;
 
 /**
  * A single-threaded Main class with database connection.
@@ -53,7 +55,7 @@ public abstract class ModelMain extends AbstractMain {
 		
  		loadGlobals();
 
-		PhotoFactory.initialize();
+		PhotoFactory.setInstance(new GuitarPhotoFactory());
 	}
 	
 	/**
@@ -143,6 +145,9 @@ public abstract class ModelMain extends AbstractMain {
 			int lastGuitarId = result.getInt("last_guitar_id");
 			GuitarManager.getInstance().setCurrentId(lastGuitarId);		
 			SysLog.logSysInfo("loaded global variable lastGuitarId: " + lastGuitarId);
+			int lastGuitarTypeId = result.getInt("last_guitar_type_id");
+			GuitarTypeManager.getInstance().setCurrentId(lastGuitarTypeId);		
+			SysLog.logSysInfo("loaded global variable lastGuitarTypeId: " + lastGuitarTypeId);
 		} else {
 			SysLog.logSysError("Could not load globals!");
 		}
@@ -178,6 +183,9 @@ public abstract class ModelMain extends AbstractMain {
 			int lastGuitarId = GuitarManager.getInstance().getCurrentId();
 			rset.updateInt("last_guitar_id", lastGuitarId);
 			SysLog.logSysInfo("saved global variable lastGuitarId: " + lastGuitarId);
+			int lastGuitarTypeId = GuitarTypeManager.getInstance().getCurrentId();
+			rset.updateInt("last_guitar_type_id", lastGuitarTypeId);
+			SysLog.logSysInfo("saved global variable lastGuitarTypeId: " + lastGuitarTypeId);
 			rset.updateRow();
 		} else {
 			SysLog.logSysError("Could not save globals!");
@@ -194,6 +202,7 @@ public abstract class ModelMain extends AbstractMain {
 		PhotoManager.getInstance().savePhotos();			
 		UserManager.getInstance().saveUsers();
 		GuitarManager.getInstance().saveGuitars();
+		GuitarTypeManager.getInstance().saveGuitarTypes();
 		saveGlobals();
 	}
 	

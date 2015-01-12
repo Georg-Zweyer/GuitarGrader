@@ -35,6 +35,7 @@ import zweyer.georg.adap.wahlzeit.model.GuitarManager;
 import zweyer.georg.adap.wahlzeit.model.GuitarManufacturer;
 import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
 import zweyer.georg.adap.wahlzeit.model.GuitarType;
+import zweyer.georg.adap.wahlzeit.model.GuitarTypeManager;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
 
 /**
@@ -62,19 +63,33 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		
 		
 		StringBuffer buffer = new StringBuffer();
-		Collection<Guitar> list = GuitarManager.getInstance().loadGuitars();
-		for (Guitar guitar : list) {
+		Collection<GuitarType> list = GuitarTypeManager.getInstance().loadGuitarTypes();
+		for (GuitarType guitarType : list) {
 			buffer.append("<option ");
-		    buffer.append("value=\""+guitar.getId()+"\"");
-		    if(guitar.getId().equals(-1)) {
+		    buffer.append("value=\""+guitarType.getId()+"\"");
+		    if(guitarType.getId().equals(-1)) {
 		    	buffer.append(" selected");
 		    }
 		    buffer.append(">");
-		    buffer.append(guitar.getType().getName());
+		    buffer.append(guitarType.getName());
 		    buffer.append("</option>");
 		}
 		
-		part.addString("guitar", buffer.toString());
+		StringBuffer buffer2 = new StringBuffer();
+		Collection<Guitar> list2 = GuitarManager.getInstance().loadGuitars();
+		for (Guitar guitar : list2) {
+			buffer2.append("<option ");
+		    buffer2.append("value=\""+guitar.getId()+"\"");
+		    if(guitar.getId().equals(-1)) {
+		    	buffer2.append(" selected");
+		    }
+		    buffer2.append(">");
+		    buffer2.append(guitar.getYearBuilt()+" "+guitar.getColor()+": "+guitar.getType().getName());
+		    buffer2.append("</option>");
+		}
+		
+		part.addString("guitar", buffer2.toString());
+		part.addString("guitarType", buffer.toString());
 	}
 	
 	/**
@@ -88,10 +103,17 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		String longitude = us.getAndSaveAsString(args, "long");
 		String mapcode = us.getAndSaveAsString(args, "mapcode");
 		
-		// get the POT variables for domain data
+		// get the POST variables for domain data
 		String newGuitar = us.getAndSaveAsString(args, "newGuitar");
 		
 		String guitarId = us.getAndSaveAsString(args, "guitarId");
+		
+		String guitarColor = us.getAndSaveAsString(args, "guitarColor");
+		String guitarYearBuilt = us.getAndSaveAsString(args, "guitarYearBuilt");
+		
+		String newGuitarType = us.getAndSaveAsString(args, "newGuitarType");
+		
+		String guitarTypeId = us.getAndSaveAsString(args, "guitarTypeId");
 		
 		String guitarName = us.getAndSaveAsString(args, "guitarName");
 		String guitarManufacturer = us.getAndSaveAsString(args, "guitarManufacturer");
@@ -132,17 +154,25 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			// add domain data to the photo if correct data is given and the Photo is a domain Photo. do nothing if invalid data is given.
 			if(photo instanceof GuitarPhoto) {
 				GuitarManager gm = GuitarManager.getInstance();
+				GuitarTypeManager gtm = GuitarTypeManager.getInstance();
 				if(newGuitar.equals("0")) {
 					Guitar guitar = gm.getGuitarFromId(Integer.decode(guitarId));
 					((GuitarPhoto) photo).setGuitar(guitar);
 				} else if (newGuitar.equals("1")){
 					Guitar guitar = gm.createGuitar();
-					GuitarType type = new GuitarType();
-					type.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
-					type.setName(guitarName);
-					guitar.setType(type);
+					guitar.setColor(guitarColor);
+					guitar.setYearBuilt(Integer.decode(guitarYearBuilt));
+					if (newGuitarType.equals("0")){
+						guitar.setType(gtm.getGuitarTypeFromId(Integer.decode(guitarTypeId)));
+					} else if (newGuitarType.equals("1")) {
+						GuitarType type = gtm.createGuitarType();
+						type.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
+						type.setName(guitarName);
+						guitar.setType(type);
+						gtm.saveGuitarType(type);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.
+					}
 					((GuitarPhoto) photo).setGuitar(guitar);
-					gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise				
+					gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.				
 					}
 			}
 			

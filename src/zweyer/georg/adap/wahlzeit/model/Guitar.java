@@ -8,47 +8,23 @@ import org.wahlzeit.services.DataObject;
 
 public class Guitar extends DataObject {
 	
+	/* Collaboration: 
+	 * Manager
+	 * GuitarPhoto-Guitar
+	 */
 	protected Integer id;
-//	protected String name;
-//	protected GuitarManufacturer manufacturer = GuitarManufacturer.getInstance("");
+	//---------
 	
-	protected GuitarType type = new GuitarType();
+	protected String color;
+	protected int yearBuilt;
 	
-	
-	public Integer getId() {
-		return id;
-	}
-
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		//precondition
-//		if(name == null){
-//			throw new IllegalArgumentException();
-//		}
-//		this.name = name;
-//		incWriteCount();
-//	}
-//
-//	public GuitarManufacturer getManufacturer() {
-//		return manufacturer;
-//	}
-//	public void setManufacturer(GuitarManufacturer manufacturer) {
-//		//precondition
-//		if(manufacturer == null){
-//			throw new IllegalArgumentException();
-//		}
-//		this.manufacturer = manufacturer;
-//		incWriteCount();
-//	}	
-
-	
+	/* Collaboration: 
+	 * TypeObject
+	 */
+	protected GuitarType type = GuitarTypeManager.getInstance().getGuitarTypeFromId(-1);
 	public GuitarType getType() {
 		return type;
 	}
-
 	public void setType(GuitarType type) {
 		//precondition
 		if(type == null){
@@ -58,43 +34,78 @@ public class Guitar extends DataObject {
 		incWriteCount();
 	}
 	
+	//----------
 	
-
-	//	public Guitar() {
-//		incWriteCount();
-//	}
+	public Integer getId() {
+		return id;
+	}
+	
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		//precondition
+		if(color == null){
+			throw new IllegalArgumentException();
+		}
+		this.color = color;
+		incWriteCount();
+	}
+	public int getYearBuilt() {
+		return yearBuilt;
+	}
+	public void setYearBuilt(int yearBuilt) {
+		this.yearBuilt = yearBuilt;
+		incWriteCount();
+	}
+	
+	/* Collaboration: 
+	 * Factory
+	 */
 	public Guitar(Integer id) {
 		this.id = id;
 		incWriteCount();
 	}
+	//---------------
+	
+	/* Collaboration: 
+	 * Factory
+	 * Serializer
+	 */
 	public Guitar(ResultSet rset) throws SQLException{
 		this.readFrom(rset);
 	}
+	//-------------
 	
-	public String asString() {
-		return "ID: " + this.id + ", Name: " + this.type.getName() + ", Manufacturer: " + this.type.getManufacturer().asString();
-	}
-
+	/* Collaboration: 
+	 * Manager
+	 */
 	@Override
 	public String getIdAsString() {
 		return String.valueOf(this.id);
 	}
+	//-----------------
+	
+	/* Collaboration: 
+	 * Serializer
+	 */
 	@Override
 	public void readFrom(ResultSet rset) throws SQLException {
 		this.id = rset.getInt("id");
-		this.type = new GuitarType();
-		this.type.setName(rset.getString("name"));
-		this.type.setManufacturer(GuitarManufacturer.getInstance(rset.getString("manufacturer")));
+		this.color = rset.getString("color");
+		this.yearBuilt = rset.getInt("year_built");
+		this.type = GuitarTypeManager.getInstance().getGuitarTypeFromId(rset.getInt("guitar_type_id"));
 	}
 	@Override
 	public void writeOn(ResultSet rset) throws SQLException {
 		rset.updateInt("id", this.id);
-		rset.updateString("name", this.type.getName());
-		rset.updateString("manufacturer", this.type.getManufacturer().asString());
+		rset.updateString("color", this.color);
+		rset.updateInt("year_built", this.yearBuilt);
+		rset.updateInt("guitar_type_id", this.type.getId());
 	}
 	@Override
 	public void writeId(PreparedStatement stmt, int pos) throws SQLException {
 		stmt.setInt(pos, this.id);
 	}
-
+	//------------
 }

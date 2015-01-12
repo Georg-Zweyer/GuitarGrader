@@ -15,10 +15,17 @@ CREATE TABLE users (
 	creation_time bigint
 );
 
-CREATE TABLE guitars (
+CREATE TABLE guitar_types (
 	id integer PRIMARY KEY,
 	name text,
 	manufacturer text
+);
+
+CREATE TABLE guitars (
+	id integer PRIMARY KEY,
+	year_built integer,
+	color text,
+	guitar_type_id integer REFERENCES guitar_types(id)
 );
 
 CREATE TABLE photos (
@@ -38,8 +45,7 @@ CREATE TABLE photos (
 	creation_time bigint,
 	location_type text,
 	location text,
-	guitar_id integer REFERENCES guitars(id),
-	manufacturer text
+	guitar_id integer REFERENCES guitars(id)
 );
 
 CREATE TABLE tags (
@@ -64,15 +70,19 @@ CREATE TABLE globals (
 	last_photo_id integer,
 	last_case_id integer,
 	last_session_id integer,
-	last_guitar_id integer
+	last_guitar_id integer,
+	last_guitar_type_id integer
 );
 
-INSERT INTO globals (id, last_user_id, last_photo_id, last_case_id, last_session_id, last_guitar_id)
-	VALUES (0, 1, 0, 0, 0, 0);
+INSERT INTO globals (id, last_user_id, last_photo_id, last_case_id, last_session_id, last_guitar_id, last_guitar_type_id)
+	VALUES (0, 1, 0, 0, 0, 0, 0);
 
 INSERT INTO users (id, name, name_as_tag, email_address, "password", rights, status)
 	VALUES (1, 'admin', 'admin', 'root@localhost', 'admin', 4, 1);
 	
-INSERT INTO guitars (id, name, manufacturer)
+INSERT INTO guitar_types (id, name, manufacturer)
 	VALUES (-1, 'None', '--');
+	
+INSERT INTO guitars (id, color, year_built, guitar_type_id)
+	VALUES (-1, '--', 0, -1);
 

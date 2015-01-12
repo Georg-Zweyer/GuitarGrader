@@ -173,6 +173,8 @@ public class ShowPhotoPageHandler extends AbstractWebPageHandler implements WebF
 		// pass over the domain data to be shown in the caption
 		if (photo instanceof GuitarPhoto) {
 			caption.addString("guitarId", ((GuitarPhoto)photo).getGuitar().getId().toString());
+			caption.addString("color", ((GuitarPhoto)photo).getGuitar().getColor());
+			caption.addString("yearBuilt", String.valueOf(((GuitarPhoto)photo).getGuitar().getYearBuilt()));
 			caption.addString("name", ((GuitarPhoto)photo).getGuitar().getType().getName());
 			caption.addString("manufacturer", ((GuitarPhoto)photo).getGuitar().getType().getManufacturer().asString());
 		} else {

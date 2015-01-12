@@ -212,3 +212,7 @@ div#imageInfo {
 table#imageTable {
 	padding: 8px;
 }
+
+div.radioOption {
+	white-space: nowrap;
+}
