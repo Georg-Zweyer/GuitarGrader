@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoId;
+import org.wahlzeit.services.SysLog;
 
 public class GuitarPhoto extends Photo {
 	
@@ -66,7 +67,11 @@ public class GuitarPhoto extends Photo {
 	//--------------
 	
 	protected void initialize(){
-		this.guitar = GuitarManager.getInstance().getGuitarFromId(-1);;
+		try {
+			this.guitar = GuitarManager.getInstance().getGuitarFromId(-1);
+		} catch (GuitarNotFoundException e) {
+			throw new IllegalStateException("Default Guitar (Id:-1) not found!");
+		}
 	}
 	
 	/* Collaboration: 
@@ -75,7 +80,17 @@ public class GuitarPhoto extends Photo {
 	public void readFrom(ResultSet rset) throws SQLException {
 		super.readFrom(rset);
 		
-		this.guitar = GuitarManager.getInstance().getGuitarFromId(rset.getInt("guitar_id"));
+		try {
+			this.guitar = GuitarManager.getInstance().getGuitarFromId(rset.getInt("guitar_id"));
+		} catch (GuitarNotFoundException e) {
+			SysLog.logThrowable(e);
+			SysLog.logSysError("Guitar with id "+rset.getInt("guitar_id")+" was not found. Changed to default Guitar." );
+			try {
+				this.guitar = GuitarManager.getInstance().getGuitarFromId(-1);
+			} catch (GuitarNotFoundException ex) {
+				throw new IllegalStateException("Default Guitar (Id:-1) not found!");
+			}
+		}
 	}
 	public void writeOn(ResultSet rset) throws SQLException {
 		super.writeOn(rset);

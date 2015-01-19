@@ -23,6 +23,7 @@ package org.wahlzeit.handlers;
 import java.util.*;
 import java.io.*;
 
+import org.apache.log4j.net.SyslogAppender;
 import org.wahlzeit.model.*;
 import org.wahlzeit.services.*;
 import org.wahlzeit.utils.*;
@@ -33,10 +34,16 @@ import zweyer.georg.adap.wahlzeit.model.Guitar;
 import zweyer.georg.adap.wahlzeit.model.GuitarFactory;
 import zweyer.georg.adap.wahlzeit.model.GuitarManager;
 import zweyer.georg.adap.wahlzeit.model.GuitarManufacturer;
+import zweyer.georg.adap.wahlzeit.model.GuitarModelException;
+import zweyer.georg.adap.wahlzeit.model.GuitarNotFoundException;
 import zweyer.georg.adap.wahlzeit.model.GuitarPhoto;
 import zweyer.georg.adap.wahlzeit.model.GuitarType;
 import zweyer.georg.adap.wahlzeit.model.GuitarTypeManager;
+import zweyer.georg.adap.wahlzeit.model.GuitarTypeNotFoundException;
+import zweyer.georg.adap.wahlzeit.model.IllegalLocationException;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
+import zweyer.georg.adap.wahlzeit.model.UnableToCreateGuitarException;
+import zweyer.georg.adap.wahlzeit.model.UnableToCreateGuitarTypeException;
 
 /**
  * 
@@ -141,14 +148,22 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			if (!latitude.isEmpty() && !longitude.isEmpty()) {
 				try {
 					photo.setLocation(new GPSLocation(latitude+","+longitude));
-				} catch (AssertionError ae) {
-					
+				} catch (IllegalLocationException e) {
+					SysLog.logThrowable(e);
+					us.setTwoLineMessage(us.cfg().getPhotoUploadFailed(),"Invalid location!");
+					user.removePhoto(photo);
+					photo.getStatus().asDeleted(true);
+					return PartUtil.UPLOAD_PHOTO_PAGE_NAME;
 				}
 			} else if (!mapcode.isEmpty()) {
 				try {
 					photo.setLocation(new MapcodeLocation(mapcode));
-				} catch (AssertionError ae) {
-					
+				} catch (IllegalLocationException e) {
+					SysLog.logThrowable(e);
+					us.setTwoLineMessage(us.cfg().getPhotoUploadFailed(),"Invalid location!");
+					user.removePhoto(photo);
+					photo.getStatus().asDeleted(true);
+					return PartUtil.UPLOAD_PHOTO_PAGE_NAME;
 				}
 			} 
 			// add domain data to the photo if correct data is given and the Photo is a domain Photo. do nothing if invalid data is given.
@@ -156,24 +171,44 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 				GuitarManager gm = GuitarManager.getInstance();
 				GuitarTypeManager gtm = GuitarTypeManager.getInstance();
 				if(newGuitar.equals("0")) {
-					Guitar guitar = gm.getGuitarFromId(Integer.decode(guitarId));
-					((GuitarPhoto) photo).setGuitar(guitar);
+					try {
+						Guitar guitar = gm.getGuitarFromId(Integer.decode(guitarId));
+						((GuitarPhoto) photo).setGuitar(guitar);
+					} catch (GuitarNotFoundException e) {
+						SysLog.logThrowable(e);
+						SysLog.logSysError("Unable to find Guitar at photo upload. Changed to default.");
+					}
 				} else if (newGuitar.equals("1")){
-					Guitar guitar = gm.createGuitar();
-					guitar.setColor(guitarColor);
-					guitar.setYearBuilt(Integer.decode(guitarYearBuilt));
-					if (newGuitarType.equals("0")){
-						guitar.setType(gtm.getGuitarTypeFromId(Integer.decode(guitarTypeId)));
-					} else if (newGuitarType.equals("1")) {
-						GuitarType type = gtm.createGuitarType();
-						type.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
-						type.setName(guitarName);
-						guitar.setType(type);
-						gtm.saveGuitarType(type);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.
+					try {
+						Guitar guitar = gm.createGuitar();
+						guitar.setColor(guitarColor);
+						guitar.setYearBuilt(Integer.decode(guitarYearBuilt));
+						if (newGuitarType.equals("0")){
+							try {
+								guitar.setType(gtm.getGuitarTypeFromId(Integer.decode(guitarTypeId)));
+							} catch (GuitarTypeNotFoundException ex) {
+								SysLog.logThrowable(ex);
+								SysLog.logSysError("Unable to find GuitarType at photo upload. Changed to default.");
+							}
+						} else if (newGuitarType.equals("1")) {
+							try {
+								GuitarType type = gtm.createGuitarType();
+								type.setManufacturer(GuitarManufacturer.getInstance(guitarManufacturer));
+								type.setName(guitarName);
+								guitar.setType(type);
+								gtm.saveGuitarType(type);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.
+							} catch (UnableToCreateGuitarTypeException ex) {
+								SysLog.logThrowable(ex);
+								SysLog.logSysError("Unable to create GuitarType at photo upload. Changed to default.");
+							}
+						}
+						((GuitarPhoto) photo).setGuitar(guitar);
+						gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.				
+					} catch (UnableToCreateGuitarException e) {
+						SysLog.logThrowable(e);
+						SysLog.logSysError("Unable to create Guitar at photo upload. Changed to default.");
 					}
-					((GuitarPhoto) photo).setGuitar(guitar);
-					gm.saveGuitar(guitar);//needed cause i don't know when it gets saved otherwise cause saveAll() is not called if the server is terminated.				
-					}
+				}
 			}
 			
 			pm.savePhoto(photo);

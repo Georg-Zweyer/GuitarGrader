@@ -60,12 +60,17 @@ public class GuitarTypeManager extends ObjectManager {
 	 * Manager
 	 */
 	public final boolean hasGuitarType(Integer id) {
-		return getGuitarTypeFromId(id) != null;
+		try {
+			getGuitarTypeFromId(id);
+		} catch (GuitarTypeNotFoundException e) {
+			return false;
+		}
+		return true;
 	}
 	protected boolean doHasGuitarType(Integer id) {
 		return this.guitarTypeCache.containsKey(id);
 	}
-	public final GuitarType getGuitarTypeFromId(Integer id) {
+	public final GuitarType getGuitarTypeFromId(Integer id) throws GuitarTypeNotFoundException {
 		if (id == null || id < -1) {
 			throw new IllegalArgumentException();
 		}
@@ -81,7 +86,9 @@ public class GuitarTypeManager extends ObjectManager {
 				doAddGuitarType(result);
 			}
 		}
-		
+		if(result == null){
+			throw new GuitarTypeNotFoundException();
+		}
 		return result;
 	}
 	protected GuitarType doGetGuitarTypeFromId(Integer id) {
@@ -103,12 +110,22 @@ public class GuitarTypeManager extends ObjectManager {
 	protected void doAddGuitarType(GuitarType guitarType) {
 		this.guitarTypeCache.put(guitarType.getId(), guitarType);
 	}
-	public GuitarType createGuitarType() throws Exception {
-		this.currentId++;
-		Integer id = Integer.valueOf(this.currentId);
-		GuitarType result = GuitarTypeFactory.getInstance().createGuitarType(id);
-		addGuitarType(result);
-		return result;
+	public GuitarType createGuitarType() throws UnableToCreateGuitarTypeException {
+		int noOfTries = 0;
+		while (noOfTries < 3) {
+			this.currentId++;
+			Integer id = Integer.valueOf(this.currentId);
+			GuitarType result = GuitarTypeFactory.getInstance().createGuitarType(id);
+		
+			try {
+				addGuitarType(result);
+				return result;
+			} catch (IllegalStateException ise) {
+				SysLog.logThrowable(ise);
+				noOfTries++;
+			}
+		}
+		throw new UnableToCreateGuitarTypeException();
 	}
 	public void saveGuitarType(GuitarType guitarType) {
 		try {

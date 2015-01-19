@@ -6,6 +6,6 @@ public interface Location {
 	
 	public String asString();
 	public double[] asGPSCoordinates();
-	public void setLocation(String location);
+	public void setLocation(String location) throws IllegalLocationException;
 	public String getLocationType();
 }

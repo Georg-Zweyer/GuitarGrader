@@ -57,12 +57,17 @@ public class GuitarManager extends ObjectManager{
 	 * Manager
 	 */
 	public final boolean hasGuitar(Integer id) {
-		return getGuitarFromId(id) != null;
+		try {
+			getGuitarFromId(id);
+		} catch (GuitarNotFoundException e) {
+			return false;
+		}
+		return true;
 	}
 	protected boolean doHasGuitar(Integer id) {
 		return this.guitarCache.containsKey(id);
 	}
-	public final Guitar getGuitarFromId(Integer id) {
+	public final Guitar getGuitarFromId(Integer id) throws GuitarNotFoundException {
 		if (id == null || id < -1) {
 			throw new IllegalArgumentException();
 		}
@@ -78,7 +83,9 @@ public class GuitarManager extends ObjectManager{
 				doAddGuitar(result);
 			}
 		}
-		
+		if(result == null){
+			throw new GuitarNotFoundException();
+		}
 		return result;
 	}
 	protected Guitar doGetGuitarFromId(Integer id) {
@@ -100,12 +107,21 @@ public class GuitarManager extends ObjectManager{
 	protected void doAddGuitar(Guitar guitar) {
 		this.guitarCache.put(guitar.getId(), guitar);
 	}
-	public Guitar createGuitar() throws Exception {
-		this.currentId++;
-		Integer id = Integer.valueOf(this.currentId);
-		Guitar result = GuitarFactory.getInstance().createGuitar(id);
-		addGuitar(result);
-		return result;
+	public Guitar createGuitar() throws UnableToCreateGuitarException {
+		int noOfTries = 0;
+		while (noOfTries < 3) {
+			this.currentId++;
+			Integer id = Integer.valueOf(this.currentId);
+			Guitar result = GuitarFactory.getInstance().createGuitar(id);
+			try {
+				addGuitar(result);
+				return result;
+			} catch (IllegalStateException ise) {
+				SysLog.logThrowable(ise);
+				noOfTries++;
+			}
+		}
+		throw new UnableToCreateGuitarException();
 	}
 	public void saveGuitar(Guitar guitar) {
 		try {

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.wahlzeit.services.DataObject;
+import org.wahlzeit.services.SysLog;
 
 public class Guitar extends DataObject {
 	
@@ -21,7 +22,7 @@ public class Guitar extends DataObject {
 	/* Collaboration: 
 	 * TypeObject
 	 */
-	protected GuitarType type = GuitarTypeManager.getInstance().getGuitarTypeFromId(-1);
+	protected GuitarType type;
 	public GuitarType getType() {
 		return type;
 	}
@@ -59,11 +60,24 @@ public class Guitar extends DataObject {
 		incWriteCount();
 	}
 	
+	protected void initialize(){
+		try {
+			this.type = GuitarTypeManager.getInstance().getGuitarTypeFromId(-1);
+		} catch (GuitarTypeNotFoundException e1) {
+			throw new IllegalStateException("Default GuitarType (Id:-1) not found!");
+		}
+	}
+	
 	/* Collaboration: 
 	 * Factory
 	 */
 	public Guitar(Integer id) {
+		//precondition
+		if(id == null){
+			throw new IllegalArgumentException();
+		}
 		this.id = id;
+		initialize();
 		incWriteCount();
 	}
 	//---------------
@@ -94,7 +108,17 @@ public class Guitar extends DataObject {
 		this.id = rset.getInt("id");
 		this.color = rset.getString("color");
 		this.yearBuilt = rset.getInt("year_built");
-		this.type = GuitarTypeManager.getInstance().getGuitarTypeFromId(rset.getInt("guitar_type_id"));
+		try {
+			this.type = GuitarTypeManager.getInstance().getGuitarTypeFromId(rset.getInt("guitar_type_id"));
+		} catch (GuitarTypeNotFoundException e) {
+			SysLog.logThrowable(e);
+			SysLog.logSysError("GuitarType with id "+rset.getInt("guitar_type_id")+" was not found. Changed to default GuitarType." );
+			try {
+				this.type = GuitarTypeManager.getInstance().getGuitarTypeFromId(-1);
+			} catch (GuitarTypeNotFoundException e1) {
+				throw new IllegalStateException("Default GuitarType (Id:-1) not found!");
+			}
+		}
 	}
 	@Override
 	public void writeOn(ResultSet rset) throws SQLException {

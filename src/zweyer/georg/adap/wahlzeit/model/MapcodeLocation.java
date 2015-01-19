@@ -8,7 +8,7 @@ public class MapcodeLocation extends AbstractLocation {
 
 	protected String mapcode;
 	
-	public MapcodeLocation(String location) {
+	public MapcodeLocation(String location) throws IllegalLocationException {
 		this.setLocation(location);
 	}
 	
@@ -23,11 +23,11 @@ public class MapcodeLocation extends AbstractLocation {
 	}
 
 	@Override
-	protected void assertIsValidLocation(String location) throws AssertionError {
+	protected void assertIsValidLocation(String location) {
 		try {
 			MapcodeCodec.decode(location);
 		} catch (IllegalArgumentException | UnknownMapcodeException e) {
-			throw new AssertionError();
+			throw new IllegalArgumentException();
 		}
 	}
 	

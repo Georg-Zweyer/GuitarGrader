@@ -28,6 +28,7 @@ import org.wahlzeit.utils.*;
 
 import zweyer.georg.adap.wahlzeit.model.EmptyLocation;
 import zweyer.georg.adap.wahlzeit.model.GPSLocation;
+import zweyer.georg.adap.wahlzeit.model.IllegalLocationException;
 import zweyer.georg.adap.wahlzeit.model.Location;
 import zweyer.georg.adap.wahlzeit.model.MapcodeLocation;
 
@@ -187,8 +188,26 @@ public abstract class Photo extends DataObject {
 		// read the location data from the database
 		String locationType = rset.getString("location_type");
 		switch(locationType) {
-		case "GPS": {location = new GPSLocation(rset.getString("location"));break;}
-		case "Mapcode": {location = new MapcodeLocation(rset.getString("location"));break;}
+		case "GPS": {
+			try {
+				location = new GPSLocation(rset.getString("location"));
+			} catch (IllegalLocationException e) {
+				SysLog.logThrowable(e);
+				SysLog.logSysError("Illeagal Location loaded from database. Changed to empty.");
+				this.location = Location.EMPTY_LOCATION;
+			}
+			break;
+		}
+		case "Mapcode": {
+			try {
+				location = new MapcodeLocation(rset.getString("location"));
+			} catch (IllegalLocationException e) {
+				SysLog.logThrowable(e);
+				SysLog.logSysError("Illeagal Location loaded from database. Changed to empty.");
+				this.location = Location.EMPTY_LOCATION;
+			}
+			break;
+		}
 		case "Empty": {location = Location.EMPTY_LOCATION;break;}
 		}
 	}

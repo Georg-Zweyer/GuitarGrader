@@ -7,21 +7,26 @@ public class GPSLocation extends AbstractLocation {
 	protected double latitude;
 	protected double longitude;
 	
-	public GPSLocation(String location) {
+	public GPSLocation(String location) throws IllegalLocationException {
 		setLocation(location);
 	}
 
 	@Override
-	protected void assertIsValidLocation(String location) throws AssertionError {
+	protected void assertIsValidLocation(String location) {
 		if (location != null) {
 			String[] components = location.split(",");
 			for (String component : components) {
 				component.trim();
 			}
-			assert(components.length == 2);
-			double x = Double.parseDouble(components[0]);
-			double y = Double.parseDouble(components[1]);
-			assert ((x <= 90.0 && x >= -90.0) && (y <= 180.0 && y >= -180.0));
+			if (components.length != 2) {
+				throw new IllegalArgumentException("To many or to less coordinates.");
+			} else {
+				double x = Double.parseDouble(components[0]);
+				double y = Double.parseDouble(components[1]);
+				if (! ( (x <= 90.0 && x >= -90.0) && (y <= 180.0 && y >= -180.0) ) ) {
+					throw new IllegalArgumentException("coordinates are out of range.");
+				}
+			}
 		}
 	}
 
